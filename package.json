@@ -1,0 +1,32 @@
+{
+  "name": "professor",
+  "version": "0.0.1",
+  "description": "A GitHub App",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf dist types",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "node dist/smee-dev.js"
+  },
+  "author": "Ram Nad",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/lru-cache": "^5.1.0",
+    "@types/node": "^14.0.5",
+    "smee-client": "^1.1.0",
+    "typescript": "^3.9.3"
+  },
+  "dependencies": {
+    "@octokit/rest": "^17.9.2",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "lru-cache": "^5.1.1"
+  }
+}
