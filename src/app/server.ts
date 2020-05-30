@@ -72,10 +72,10 @@ app.post(
           }
           const action: string = payload?.action;
           const installationId: number = payload?.installation?.id;
-          const repo: number = payload?.repository?.id;
-          const owner: number = payload?.repository?.owner?.id;
-          const repositoryFullName: string = payload?.repository?.full_name;
-          const ownerLogin: string = payload?.repository?.owner?.login;
+          const repo: string = payload?.repository?.name;
+          const owner: string = payload?.repository?.owner?.login;
+          const repositoryId: number = payload?.repository?.id;
+          const ownerId: number = payload?.repository?.owner?.id;
           const senderId: number = payload?.sender?.id;
           const senderLogin: string = payload?.sender?.login;
           githubEvent.handleEvent(
@@ -84,9 +84,9 @@ app.post(
             {
               installationId,
               owner,
-              ownerLogin,
+              ownerId,
               repo,
-              repositoryFullName,
+              repositoryId,
               senderId,
               senderLogin,
             },

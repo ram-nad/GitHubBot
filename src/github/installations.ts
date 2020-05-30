@@ -13,7 +13,9 @@ const Cache: APICache = new LRUCache<number, Octokit>({
   maxAge: TIME_LIMIT,
 });
 
-async function getInstallationAPI(installationId: number): Promise<Octokit> {
+export async function getInstallationAPI(
+  installationId: number
+): Promise<Octokit> {
   let GitHubAPI = Cache.get(installationId);
   if (!GitHubAPI) {
     GitHubAPI = new Octokit({
