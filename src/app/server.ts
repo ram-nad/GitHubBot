@@ -125,6 +125,7 @@ export async function closeServer(): Promise<void> {
     if (server) {
       if (server.listening) {
         server.close(() => {
+          console.log("Server closed");
           res();
         });
       } else {

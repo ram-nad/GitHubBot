@@ -1,4 +1,3 @@
-import { getInstallationAPI } from "../github/installations";
 import GitHubEvent from "./event";
 import { getIssue } from "../utils/issues";
 
@@ -14,28 +13,43 @@ export const githubEvent = new GitHubEvent();
 githubEvent.on(
   "issues.opened",
   async (req, event, action, context, payload) => {
-    const API = await getInstallationAPI(context.installationId!);
+    const API = context.installation!;
     const issue = getIssue(payload);
     await API.issues.createComment({
       owner: context.owner!,
       repo: context.repo!,
       issue_number: issue.issue_number,
-      body: `Hi @${issue.issue_user_login}, thanks for opening this issue. Someone from development team will soon reach out to you.`,
+      body: (context.config.issue.message + "")
+        .replace(
+          /([^"] | ^){ ACTOR }([^"] | $)/g,
+          "$1" + issue.issue_user_login + "$2"
+        )
+        .replace(
+          /([^"] | ^){ NUMBER }([^"] | $)/g,
+          "$1" + issue.issue_number.toString() + "$2"
+        ),
     });
-    try {
-      const res = await API.issues.checkAssignee({
-        owner: context.owner!,
-        repo: context.repo!,
-        assignee: issue.issue_user_login,
-      });
-      if (res.status === 204) {
-        await API.issues.addAssignees({
+    if (
+      !(
+        context.config.issue.assign == false ||
+        context.config.issue.assign == "false"
+      )
+    ) {
+      try {
+        const res = await API.issues.checkAssignee({
           owner: context.owner!,
           repo: context.repo!,
-          issue_number: issue.issue_number,
-          assignees: [issue.issue_user_login],
+          assignee: issue.issue_user_login,
         });
-      }
-    } catch (err) {} // Work around
+        if (res.status === 204) {
+          await API.issues.addAssignees({
+            owner: context.owner!,
+            repo: context.repo!,
+            issue_number: issue.issue_number,
+            assignees: [issue.issue_user_login],
+          });
+        }
+      } catch (err) {} // Work around
+    }
   }
 );

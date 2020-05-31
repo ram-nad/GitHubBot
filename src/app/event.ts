@@ -1,5 +1,10 @@
 import { EventEmitter } from "events";
 import { Request } from "express";
+import { Octokit } from "@octokit/rest";
+import { getInstallationAPI } from "../github/installations";
+import { getConfiguration } from "../github/config";
+import { all } from "deepmerge";
+import { defaultConfiguration } from "./configuration";
 
 interface GitHubData extends NodeJS.Dict<any> {
   repo?: string;
@@ -9,6 +14,8 @@ interface GitHubData extends NodeJS.Dict<any> {
   installationId?: number;
   senderId?: number;
   senderLogin?: string;
+  installation?: Octokit;
+  config?: any;
 }
 
 type EventHandler = (
@@ -64,6 +71,17 @@ class GithubEvents extends EventEmitter {
     req: Request,
     payload: any
   ) {
+    if (context.installationId) {
+      context.installation = await getInstallationAPI(context.installationId);
+      context.config = all([
+        defaultConfiguration,
+        await getConfiguration(
+          context.installation!,
+          context.owner!,
+          context.repo!
+        ),
+      ]);
+    }
     this.emit(event, req, event, action || "", context, payload);
     if (action) {
       this.emit(event + "." + action, req, event, action, context, payload);
