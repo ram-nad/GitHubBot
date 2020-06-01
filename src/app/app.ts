@@ -1,5 +1,8 @@
 import GitHubEvent from "./event";
 import { getIssue } from "../utils/issues";
+import { getPull } from "../utils/pull-request";
+import { match } from "minimatch";
+import { assignConditions } from "./configuration";
 
 export const githubEvent = new GitHubEvent();
 
@@ -20,14 +23,8 @@ githubEvent.on(
       repo: context.repo!,
       issue_number: issue.issue_number,
       body: (context.config.issue.message + "")
-        .replace(
-          /([^"] | ^){ ACTOR }([^"] | $)/g,
-          "$1" + issue.issue_user_login + "$2"
-        )
-        .replace(
-          /([^"] | ^){ NUMBER }([^"] | $)/g,
-          "$1" + issue.issue_number.toString() + "$2"
-        ),
+        .replace(/{ ACTOR }/g, issue.issue_user_login)
+        .replace(/{ NUMBER }/g, issue.issue_number.toString()),
     });
     if (
       !(
@@ -50,6 +47,53 @@ githubEvent.on(
           });
         }
       } catch (err) {} // Work around
+    }
+  }
+);
+
+githubEvent.on(
+  "pull_request.opened",
+  async (req, event, action, context, payload) => {
+    const API = context.installation!;
+    const pull = getPull(payload);
+    await API.issues.createComment({
+      owner: context.owner!,
+      repo: context.repo!,
+      issue_number: pull.pull_number,
+      body: (context.config.pr.message + "")
+        .replace(/{ ACTOR }/g, pull.pull_user_login)
+        .replace(/{ NUMBER }/g, pull.pull_number.toString()),
+    });
+    if (
+      !(
+        context.config.pr.assign == false || context.config.pr.assign == "false"
+      )
+    ) {
+      try {
+        let assignes = new Set<string>();
+        let fileOptions = await API.pulls.listFiles.endpoint.merge({
+          owner: context.owner!,
+          repo: context.repo!,
+          pull_number: pull.pull_number,
+        });
+        let files = await API.paginate<any>(fileOptions);
+        let fileNames: string[] = files.map((file) => file.filename);
+        let conditions: assignConditions[] = context.config.pr.conditions;
+        conditions.forEach((element) => {
+          if (match(fileNames, element.glob)) {
+            let a = element.assignes;
+            a.forEach((val) => assignes.add(val));
+          }
+        });
+        await API.issues.addAssignees({
+          owner: context.owner!,
+          repo: context.repo!,
+          issue_number: pull.pull_number,
+          assignees: Array.from(assignes),
+        });
+      } catch (err) {
+        console.error(err);
+      } // Work around
     }
   }
 );

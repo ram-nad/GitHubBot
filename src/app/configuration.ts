@@ -1,9 +1,9 @@
-type assignes = {
-  blob: string;
+export type assignConditions = {
+  glob: string;
   assignes: string[];
 };
 
-type configuration = {
+export type configuration = {
   issue: {
     message: string;
     assign: boolean;
@@ -11,7 +11,7 @@ type configuration = {
   pr: {
     message: string;
     assign: boolean;
-    assignCondition: assignes[];
+    conditions: assignConditions[];
   };
 };
 
@@ -25,6 +25,6 @@ export const defaultConfiguration: configuration = {
     message:
       "@{ ACTOR }, thanks for your contribution. Your PR will be reviewed soon.",
     assign: true,
-    assignCondition: [] as assignes[],
+    conditions: [] as assignes[],
   },
 };
