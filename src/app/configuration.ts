@@ -25,6 +25,6 @@ export const defaultConfiguration: configuration = {
     message:
       "@{ ACTOR }, thanks for your contribution. Your PR will be reviewed soon.",
     assign: true,
-    conditions: [] as assignes[],
+    conditions: [] as assignConditions[],
   },
 };

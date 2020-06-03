@@ -32,21 +32,12 @@ githubEvent.on(
         context.config.issue.assign == "false"
       )
     ) {
-      try {
-        const res = await API.issues.checkAssignee({
-          owner: context.owner!,
-          repo: context.repo!,
-          assignee: issue.issue_user_login,
-        });
-        if (res.status === 204) {
-          await API.issues.addAssignees({
-            owner: context.owner!,
-            repo: context.repo!,
-            issue_number: issue.issue_number,
-            assignees: [issue.issue_user_login],
-          });
-        }
-      } catch (err) {} // Work around
+      await API.issues.addAssignees({
+        owner: context.owner!,
+        repo: context.repo!,
+        issue_number: issue.issue_number,
+        assignees: [issue.issue_user_login],
+      }); // This will fail silently if `user` cannot be assigned to this `issue`
     }
   }
 );
@@ -69,31 +60,27 @@ githubEvent.on(
         context.config.pr.assign == false || context.config.pr.assign == "false"
       )
     ) {
-      try {
-        let assignes = new Set<string>();
-        let fileOptions = await API.pulls.listFiles.endpoint.merge({
-          owner: context.owner!,
-          repo: context.repo!,
-          pull_number: pull.pull_number,
-        });
-        let files = await API.paginate<any>(fileOptions);
-        let fileNames: string[] = files.map((file) => file.filename);
-        let conditions: assignConditions[] = context.config.pr.conditions;
-        conditions.forEach((element) => {
-          if (match(fileNames, element.glob)) {
-            let a = element.assignes;
-            a.forEach((val) => assignes.add(val));
-          }
-        });
-        await API.issues.addAssignees({
-          owner: context.owner!,
-          repo: context.repo!,
-          issue_number: pull.pull_number,
-          assignees: Array.from(assignes),
-        });
-      } catch (err) {
-        console.error(err);
-      } // Work around
+      let assignes = new Set<string>();
+      let fileOptions = await API.pulls.listFiles.endpoint.merge({
+        owner: context.owner!,
+        repo: context.repo!,
+        pull_number: pull.pull_number,
+      });
+      let files = await API.paginate<any>(fileOptions);
+      let fileNames: string[] = files.map((file) => file.filename);
+      let conditions: assignConditions[] = context.config.pr.conditions;
+      conditions.forEach((element) => {
+        if (match(fileNames, element.glob)) {
+          let a = element.assignes;
+          a.forEach((val) => assignes.add(val));
+        }
+      });
+      await API.issues.addAssignees({
+        owner: context.owner!,
+        repo: context.repo!,
+        issue_number: pull.pull_number,
+        assignees: Array.from(assignes),
+      });
     }
   }
 );
