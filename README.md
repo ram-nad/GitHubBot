@@ -1,6 +1,6 @@
 # GitHub Bot
 
-Uses [@Octokit/rest.js](https://github.com/octokit/rest.js)
+[![Heroku](https://heroku-badge.herokuapp.com/?app=heroku-badge)]
 
 ### Features:
 
