@@ -70,7 +70,7 @@ githubEvent.on(
       let fileNames: string[] = files.map((file) => file.filename);
       let conditions: assignConditions[] = context.config.pr.conditions;
       conditions.forEach((element) => {
-        if (match(fileNames, element.glob)) {
+        if (match(fileNames, element.glob).length > 0) {
           let a = element.assignes;
           a.forEach((val) => assignes.add(val));
         }
@@ -81,6 +81,65 @@ githubEvent.on(
         issue_number: pull.pull_number,
         assignees: Array.from(assignes),
       });
+    }
+  }
+);
+
+githubEvent.multiple(
+  "pull_request",
+  ["opened", "synchronize", "labeled", "unlabeled"],
+  async (req, event, action, context, payload) => {
+    const API = context.installation!;
+    const pull = getPull(payload);
+    if (
+      !(
+        context.config.pr.change_check == false ||
+        context.config.pr.change_check == "false"
+      )
+    ) {
+      let glob = context.config.pr.change_glob;
+      let skip_label: string = context.config.pr.change_skip_label;
+      let labels: any[] = payload.pull_request.labels;
+      let labelNames: string[] = labels.filter((label) => {
+        return label.name === skip_label;
+      });
+      if (labelNames.length > 0) {
+        await API.repos.createStatus({
+          owner: context.owner!,
+          repo: context.repo!,
+          sha: pull.head_sha,
+          state: "success",
+          context: "bot/changelog_check",
+          description: "Changelog Check Skipped",
+        });
+        return;
+      }
+      let fileOptions = await API.pulls.listFiles.endpoint.merge({
+        owner: context.owner!,
+        repo: context.repo!,
+        pull_number: pull.pull_number,
+      });
+      let files = await API.paginate<any>(fileOptions);
+      let fileNames: string[] = files.map((file) => file.filename);
+      if (match(fileNames, glob).length > 0) {
+        await API.repos.createStatus({
+          owner: context.owner!,
+          repo: context.repo!,
+          sha: pull.head_sha,
+          state: "success",
+          context: "bot/changelog_check",
+          description: "Changelog Added",
+        });
+      } else {
+        await API.repos.createStatus({
+          owner: context.owner!,
+          repo: context.repo!,
+          sha: pull.head_sha,
+          state: "failure",
+          context: "bot/changelog_check",
+          description: "Changelog Not Found",
+        });
+      }
     }
   }
 );

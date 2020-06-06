@@ -14,8 +14,8 @@ export function getPull(payload: any): pr {
     pull_number: payload.pull_request.number,
     pull_user_id: payload.pull_request.user.id,
     pull_user_login: payload.pull_request.user.login,
-    head_sha: payload.head.sha,
-    head_ref: payload.head.ref,
-    head_repo: payload.head.repo.full_name,
+    head_sha: payload.pull_request.head.sha,
+    head_ref: payload.pull_request.head.ref,
+    head_repo: payload.pull_request.head.repo.full_name,
   };
 }

@@ -12,6 +12,9 @@ export type configuration = {
     message: string;
     assign: boolean;
     conditions: assignConditions[];
+    change_check: boolean;
+    change_skip_label: string;
+    change_glob: string;
   };
 };
 
@@ -26,5 +29,8 @@ export const defaultConfiguration: configuration = {
       "@{ ACTOR }, thanks for your contribution. Your PR will be reviewed soon.",
     assign: true,
     conditions: [] as assignConditions[],
+    change_check: true,
+    change_skip_label: "Skip Changelog",
+    change_glob: "Changelog.md",
   },
 };
