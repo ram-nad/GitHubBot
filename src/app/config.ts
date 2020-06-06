@@ -1,10 +1,6 @@
-import { readFileSync } from "fs";
-
 export const APP_ID: number = Number.parseInt(process.env.APP_ID as string);
 
-export const PRIVATE_KEY: string = readFileSync(
-  process.env.PRIVATE_KEY as string
-).toString();
+export const PRIVATE_KEY: string = process.env.PRIVATE_KEY as string;
 
 export const WEBHOOK_SECRET: string = process.env.WEBHOOK_SECRET as string;
 
