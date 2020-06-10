@@ -98,6 +98,9 @@ githubEvent.multiple(
       )
     ) {
       let glob = context.config.pr.change_glob;
+      glob = (glob + "")
+        .replace(/{ ACTOR }/g, pull.pull_user_login)
+        .replace(/{ NUMBER }/g, pull.pull_number.toString());
       let skip_label: string = context.config.pr.change_skip_label;
       let labels: any[] = payload.pull_request.labels;
       let labelNames: string[] = labels.filter((label) => {

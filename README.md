@@ -2,6 +2,8 @@
 
 [![Heroku](https://heroku-badge.herokuapp.com/?app=heroku-badge)](https://wildfirepy-bot.herokuapp.com/)
 
+This bot was originally made for [The WildfirePy Project](https://github.com/wildfirepy)
+
 ### Features:
 
 - Welcome user on opening issues
@@ -42,6 +44,8 @@ pr:
   # Should changelog be checked
   change_check: true
   # Glob of file/files that should be updated
+  # Can use `{ NUMBER }` and `{ ACTOR }` which
+  # will be replaced with suitable values
   change_glob: "Changelog.md"
   # Skip Changelog Label
   skip_changelog_label: "Skip Changelog"

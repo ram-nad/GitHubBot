@@ -21,3 +21,5 @@ export const DEV_WEBHOOK_URL: string =
 export const TZ = process.env.TZ || "Asia/Kolkata";
 
 export const GH_URL = process.env.GH_URL || "";
+
+export const REPO_URL = process.env.REPO_URL || "";

@@ -1,5 +1,5 @@
 import express from "express";
-import { APP_NAME, GH_URL } from "./config";
+import { APP_NAME, GH_URL, REPO_URL } from "./config";
 import verifyPayload from "../github/verify-payload";
 import { githubEvent } from "./app";
 import { Server } from "http";
@@ -19,9 +19,12 @@ const HTML = `<!DOCTYPE html>
     <body style="width: 100vw; height: 100vh; position: relative;">
         <div style="height: 250px; width: 400px; position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); border: 1px solid black; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;">
             <h1 style="text-align: center;">${APP_NAME}</h1>
-            <br />
-            <br />
             <a href="${GH_URL}" style="color: blue; font-size: 24px; font-weight: bold; padding: 20px; border: 2px solid blue; text-decoration: none; border-radius: 15px;">Install App</a>
+            <center>
+            The source code for this bot can be found <a href="${REPO_URL}">here</a>.
+            <br />
+            Made with &hearts; by the <a href="https://github.com/wildfirepy">WildfirePy Team</a>
+            </center>
         </div>
     </body>
 </html>`;
