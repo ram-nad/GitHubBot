@@ -49,4 +49,6 @@ pr:
   change_glob: "Changelog.md"
   # Skip Changelog Label
   skip_changelog_label: "Skip Changelog"
+  # Link to the changelog guidelines
+  changelog_url: "#"
 ```

@@ -97,10 +97,11 @@ githubEvent.multiple(
         context.config.pr.change_check == "false"
       )
     ) {
-      let glob = context.config.pr.change_glob;
+      let glob: string = context.config.pr.change_glob;
       glob = (glob + "")
         .replace(/{ ACTOR }/g, pull.pull_user_login)
         .replace(/{ NUMBER }/g, pull.pull_number.toString());
+      let url: string = context.config.pr.changelog_url;
       let skip_label: string = context.config.pr.change_skip_label;
       let labels: any[] = payload.pull_request.labels;
       let labelNames: string[] = labels.filter((label) => {
@@ -114,6 +115,7 @@ githubEvent.multiple(
           state: "success",
           context: "bot/changelog_check",
           description: "Changelog Check Skipped",
+          target_url: url,
         });
         return;
       }
@@ -132,6 +134,7 @@ githubEvent.multiple(
           state: "success",
           context: "bot/changelog_check",
           description: "Changelog Added",
+          target_url: url,
         });
       } else {
         await API.repos.createStatus({
@@ -141,6 +144,7 @@ githubEvent.multiple(
           state: "failure",
           context: "bot/changelog_check",
           description: "Changelog Not Found",
+          target_url: url,
         });
       }
     }

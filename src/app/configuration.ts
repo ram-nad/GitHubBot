@@ -15,6 +15,7 @@ export type configuration = {
     change_check: boolean;
     change_skip_label: string;
     change_glob: string;
+    changelog_url: string;
   };
 };
 
@@ -32,5 +33,6 @@ export const defaultConfiguration: configuration = {
     change_check: true,
     change_skip_label: "Skip Changelog",
     change_glob: "Changelog.md",
+    changelog_url: "#",
   },
 };
