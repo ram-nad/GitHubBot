@@ -102,6 +102,14 @@ githubEvent.multiple(
         .replace(/{ ACTOR }/g, pull.pull_user_login)
         .replace(/{ NUMBER }/g, pull.pull_number.toString());
       let url: string = context.config.pr.changelog_url;
+      try {
+        let url_check: URL = new URL(url);
+        if (url_check.protocol != "https:") {
+          throw new TypeError();
+        }
+      } catch (e) {
+        url = payload.pull_request.html_url;
+      }
       let skip_label: string = context.config.pr.change_skip_label;
       let labels: any[] = payload.pull_request.labels;
       let labelNames: string[] = labels.filter((label) => {
